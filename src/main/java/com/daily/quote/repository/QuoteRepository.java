@@ -18,9 +18,8 @@ public interface QuoteRepository extends JpaRepository<Quote, UUID> {
      * @param ratio The ratio used to calculate the probability of higher liked quotes.
      * @return A random quote object, with higher priority given to quotes with more likes.
      */
-    @Query("SELECT q FROM Quote q JOIN FETCH q.tags t " +
-            "WHERE (SELECT (SUM(q.likes) + COUNT(q)) / (SUM(q.likes) + COUNT(q)) FROM Quote q) > CAST(:ratio AS float) " +
-            "ORDER BY q.likes DESC LIMIT 1")
+    @Query("SELECT q FROM Quote q JOIN FETCH q.tags t ORDER BY " +
+            "COALESCE(-LOG(RAND()) / (q.likes + 1), 0) LIMIT 1")
     Quote findRandomQuote(float ratio);
 
 
