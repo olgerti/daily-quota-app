@@ -13,7 +13,7 @@ To get started with the Quota App:
 
 ## Setup
 1. Clone the repository:
-`git clone <repository_url>`
+`git clone https://github.com/olgerti/daily-quota-app.git`
 
 2. Open the project in your favorite IDE.
 
