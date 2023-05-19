@@ -51,6 +51,10 @@ class QuoteApplicationTests {
         quoteRepository.deleteAll();
     }
 
+    /**
+     * E2E happy path: generate and get random
+     * @throws Exception
+     */
     @Test
     void shouldGenerateQuoteFromApiAndFetchOneRandom() throws Exception {
 
