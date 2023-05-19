@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -45,10 +45,7 @@ public class QuoteService {
      * @return A random Quote object from the database, prioritizing quotes with higher likes.
      */
     public Quote fetchRandomQuote() {
-        float ratio = generateRandomFloat();
-        logger.info("Generated random float number: {}", ratio);
-
-        return quoteRepository.findRandomQuote(ratio);
+        return quoteRepository.findRandomQuote();
     }
 
     /**
@@ -56,9 +53,9 @@ public class QuoteService {
      *
      * @param quote object for which the likes should be incremented.
      */
-    public Quote likeQuote(Quote quote) {
-        quoteRepository.incrementLikes(quote.getId());
-        return this.findById(quote.getId()).get();
+
+    public void likeQuote(UUID quoteId) {
+        quoteRepository.incrementLikes(quoteId);
     }
 
     /**
@@ -87,12 +84,5 @@ public class QuoteService {
      */
     public Optional<Quote> findById(UUID id) {
         return quoteRepository.findById(id);
-    }
-
-
-    public float generateRandomFloat() {
-        Random random = new Random();
-        float ratio = Math.round(random.nextFloat() * 100) / 100.0f;
-        return ratio;
     }
 }

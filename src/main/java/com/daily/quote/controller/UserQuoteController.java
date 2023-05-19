@@ -46,14 +46,18 @@ public class UserQuoteController {
      */
     @PatchMapping("/like/{quote_id}")
     public ResponseEntity<Quote> likeQuote(@PathVariable("quote_id") UUID quoteId) throws ResponseStatusException {
+
+        logger.info("Liked quote with ID: {}", quoteId);
+
+        quoteService.likeQuote(quoteId);
+
         Optional<Quote> quote = quoteService.findById(quoteId);
+
         if (quote.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Quote not found");
         }
 
-        logger.info("Liked quote with ID: {}", quote.get().getId());
-
-        return ResponseEntity.ok().body(quoteService.likeQuote(quote.get()));
+        return ResponseEntity.ok().body(quote.get());
     }
 
 

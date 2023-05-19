@@ -20,7 +20,7 @@ public interface QuoteRepository extends JpaRepository<Quote, UUID> {
      */
     @Query("SELECT q FROM Quote q JOIN FETCH q.tags t ORDER BY " +
             "COALESCE(-LOG(RAND()) / (q.likes + 1), 0) LIMIT 1")
-    Quote findRandomQuote(float ratio);
+    Quote findRandomQuote();
 
 
     /**
