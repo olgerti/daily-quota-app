@@ -19,8 +19,8 @@ To get started with the Quota App:
 
 3. Configure the database connection by updating the `application.properties` file located 
  in `src/main/resources` with your local database credentials.
-4. Build the project using Gradle: `gradle build`
-5. Run the application: `gradle bootRun`
+4. Build the project using Gradle: `./gradlew build`
+5. Run the application: `./gradlew bootRun`
 
 
 The application will start running on http://localhost:8080.
@@ -30,7 +30,7 @@ The Quota App provides an interactive API documentation using Swagger. You can a
 
 ## Running Tests
 To run the tests, execute the following command:
-`gradle test`
+`./gradlew test`
 This will execute the unit tests for the Quota App and provide you with the test results.
 
 
