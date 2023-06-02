@@ -9,12 +9,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@Getter
-@Setter
 @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
 @Entity
+@Data
 @Table(name = "quotes")
 public class Quote {
     @Id

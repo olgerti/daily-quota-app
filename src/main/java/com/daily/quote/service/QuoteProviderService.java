@@ -14,6 +14,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Service
 public class QuoteProviderService {
@@ -43,20 +45,37 @@ public class QuoteProviderService {
         logger.info("Initiating the process to fetch " + count + " quotes");
         List<Quote> quoteList = new ArrayList<>();
 
-        for (int i = 0; i < count; i++) {
-            QuoteResponse quoteResponse = this.fetchQuoteFromApi();
-            Quote quote = QuoteConverter.convertApiResponseToQuote(quoteResponse);
+//        for (int i = 0; i < count; i++) {
+//            QuoteResponse quoteResponse = this.fetchQuoteFromApi();
+//            Quote quote = QuoteConverter.convertApiResponseToQuote(quoteResponse);
+//
+//            for (String tagName : quoteResponse.getTags()) {
+//                Tag tag = tagService.findByName(tagName);
+//                if (tag != null) {
+//                    quote.getTags().add(tag);
+//                } else {
+//                    quote.getTags().add(new Tag(tagName));
+//                }
+//            }
+//            quoteList.add(quoteService.save(quote));
+//        }
 
-            for (String tagName : quoteResponse.getTags()) {
-                Tag tag = tagService.findByName(tagName);
-                if (tag != null) {
-                    quote.getTags().add(tag);
-                } else {
-                    quote.getTags().add(new Tag(tagName));
+        IntStream.range(0, count).forEach(
+                i -> {
+                    QuoteResponse quoteResponse = this.fetchQuoteFromApi();
+                    Quote quote = QuoteConverter.convertApiResponseToQuote(quoteResponse);
+                    quoteResponse.getTags().forEach(
+                            tagName -> {
+                                Tag tag  = Optional.ofNullable(tagService.findByName(tagName))
+                                        .orElse(new Tag(tagName));
+                                quote.getTags().add(tag);
+                            }
+                    );
+
+                    quoteList.add(quoteService.save(quote));
                 }
-            }
-            quoteList.add(quoteService.save(quote));
-        }
+
+        );
 
         logger.info("Completed fetching and storing quotes");
 
