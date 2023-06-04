@@ -2,6 +2,8 @@ package com.daily.quote;
 
 import com.daily.quote.entity.Quote;
 import com.daily.quote.entity.Tag;
+import com.daily.quote.mapper.QuoteMapper;
+import com.daily.quote.model.QuoteResponse;
 import com.daily.quote.repository.QuoteRepository;
 import com.daily.quote.repository.TagRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -10,6 +12,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -19,10 +22,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -147,6 +148,28 @@ class QuoteApplicationTests {
         // We have stored 3 quotes with the same tag, so here we expect to retrieve two quotes
         // since we are excluding the one we are specifically looking for
         assert quotes.size() == 2;
+    }
+
+    @Test
+    public void givenDestinationToSource_whenMaps_thenCorrect() {
+        Faker faker = new Faker();
+        String author = faker.name().fullName();
+
+        QuoteMapper mapper = Mappers.getMapper(QuoteMapper.class);
+
+        QuoteResponse quoteResponse = new QuoteResponse();
+        quoteResponse.setLength(faker.random().nextInt(1,1000));
+        quoteResponse.setContent(faker.lorem().sentence());
+        quoteResponse.setAuthor(author);
+        quoteResponse.setAuthorSlug(author.toLowerCase(Locale.ROOT));
+        quoteResponse.setDateAdded(LocalDate.now());
+        quoteResponse.setDateModified(LocalDate.now());
+
+        Quote entity = mapper.convertApiResponseToQuote(quoteResponse);
+
+        assert quoteResponse.getContent().equals(entity.getQuote());
+        assert quoteResponse.getLength() == entity.getQuoteLength();
+        assert quoteResponse.getAuthor().equals(entity.getAuthor());
     }
 
     public Tag generateAndSaveTagEntity() {

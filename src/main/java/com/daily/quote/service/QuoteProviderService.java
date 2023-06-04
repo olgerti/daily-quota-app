@@ -22,13 +22,13 @@ import java.util.stream.IntStream;
 public class QuoteProviderService {
 
     Logger logger = LoggerFactory.getLogger(QuoteService.class);
-    private RestTemplate restTemplate;
-    private QuoteService quoteService;
-    private TagService tagService;
+    private final RestTemplate restTemplate;
+    private final QuoteService quoteService;
+    private final TagService tagService;
     @Value("${quote.api.url}")
     private String quoteApiUrl;
 
-    private QuoteMapper mapper;
+    private final QuoteMapper mapper;
 
     @Autowired
     public QuoteProviderService(RestTemplateBuilder builder, QuoteService quoteService,
