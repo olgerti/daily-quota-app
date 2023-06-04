@@ -1,9 +1,10 @@
 package com.daily.quote.service;
 
-import com.daily.quote.converter.QuoteConverter;
+import com.daily.quote.mapper.QuoteMapper;
 import com.daily.quote.entity.Quote;
 import com.daily.quote.entity.Tag;
 import com.daily.quote.model.QuoteResponse;
+import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,15 @@ public class QuoteProviderService {
     @Value("${quote.api.url}")
     private String quoteApiUrl;
 
+    private QuoteMapper mapper;
+
     @Autowired
     public QuoteProviderService(RestTemplateBuilder builder, QuoteService quoteService,
                                 TagService tagService) {
         this.restTemplate = builder.build();
         this.quoteService = quoteService;
         this.tagService = tagService;
+        this.mapper = Mappers.getMapper(QuoteMapper.class);
     }
 
     /**
@@ -45,25 +49,10 @@ public class QuoteProviderService {
         logger.info("Initiating the process to fetch " + count + " quotes");
         List<Quote> quoteList = new ArrayList<>();
 
-//        for (int i = 0; i < count; i++) {
-//            QuoteResponse quoteResponse = this.fetchQuoteFromApi();
-//            Quote quote = QuoteConverter.convertApiResponseToQuote(quoteResponse);
-//
-//            for (String tagName : quoteResponse.getTags()) {
-//                Tag tag = tagService.findByName(tagName);
-//                if (tag != null) {
-//                    quote.getTags().add(tag);
-//                } else {
-//                    quote.getTags().add(new Tag(tagName));
-//                }
-//            }
-//            quoteList.add(quoteService.save(quote));
-//        }
-
         IntStream.range(0, count).forEach(
                 i -> {
                     QuoteResponse quoteResponse = this.fetchQuoteFromApi();
-                    Quote quote = QuoteConverter.convertApiResponseToQuote(quoteResponse);
+                    Quote quote = this.mapper.convertApiResponseToQuote(quoteResponse);
                     quoteResponse.getTags().forEach(
                             tagName -> {
                                 Tag tag  = Optional.ofNullable(tagService.findByName(tagName))
